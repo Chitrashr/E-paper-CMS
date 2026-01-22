@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Paper Reader</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="reader-body">
+
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-left">
+                <div class="logo">EELOKA</div>
+            </div>
+            <button class="burger" aria-label="Menu">☰</button>
+            <ul class="nav-list">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="">About Us</a></li>
+                <li><a href="">Contact Us</a></li>
+                <li><a href="">Privacy Policy</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="reader-controls">
+        <div class="reader-pagination" id="control-pagination">
+            <div class="nav-btn page-btn" id="prev-btn"><i class="fas fa-angles-left"></i></div>
+            <div class="nav-btn page-btn" id="next-btn"><i class="fas fa-angles-right"></i></div>
+        </div>
+
+        <div class="reader-actions">
+            <button class="btn-pdf">PDF</button>
+            <button class="btn-clip"><i class="fas fa-scissors"></i> Clip</button>
+            <button class="btn-archive"><i class="fas fa-box-archive"></i>
+                <input type="date" class="date-input">
+            </button>
+        </div>
+    </div>
+
+    <main class="reader-main">
+        <aside class="sidebar-thumbnails" id="thumbnail-container">
+        </aside>
+
+        <section class="viewer-area">
+            <iframe src="" class="main-page-iframe" id="main-viewer" frameborder="0"></iframe>
+            <button class="pdf-nav-arrow left-arrow" id="left-arrow">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="pdf-nav-arrow right-arrow" id="right-arrow">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="socials">
+            <div class="icon"></div>
+            <div class="icon"></div>
+            <div class="icon"></div>
+            <div class="icon"></div>
+            <div class="icon"></div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+
+</html>
