@@ -46,7 +46,9 @@
         </aside>
 
         <section class="viewer-area">
-            <iframe src="" class="main-page-iframe" id="main-viewer" frameborder="0"></iframe>
+            <div class="main-page-iframe" id="pdf-container" style="overflow-y: auto; overflow-x: hidden;">
+                <canvas id="pdf-render"></canvas>
+            </div>
             <button class="pdf-nav-arrow left-arrow" id="left-arrow">
                 <i class="fas fa-chevron-left"></i>
             </button>
@@ -66,6 +68,10 @@
         </div>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
     <script src="main.js"></script>
 </body>
 

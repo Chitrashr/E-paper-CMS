@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Shared Logic: Header/Footer & Inactivity ---
+    //Header/Footer & Inactivity
     const header = document.querySelector(".header");
     const footer = document.querySelector(".footer");
     const readerControls = document.querySelector(".reader-controls");
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resetTimer();
     }
 
-    // --- Shared Logic: Burger Menu ---
+    // Burger Menu
     const burger = document.querySelector('.burger');
     const navList = document.querySelector('.nav-list');
 
@@ -52,19 +52,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }, true);
     }
 
-    // --- Shared Logic: Calendar Configuration ---
+    // Calendar Configuration
     const calendarInputs = document.querySelectorAll('.date-input');
 
     if (calendarInputs.length > 0) {
         const now = new Date();
         const today = now.toISOString().split('T')[0];
-        const sevenDaysAgoDate = new Date();
-        sevenDaysAgoDate.setDate(now.getDate() - 30);
-        const sevenDaysAgo = sevenDaysAgoDate.toISOString().split('T')[0];
+
+        const minDateObj = new Date();
+        minDateObj.setDate(now.getDate() - 29);
+        const minDate = minDateObj.toISOString().split('T')[0];
 
         calendarInputs.forEach(input => {
             input.setAttribute('max', today);
-            input.setAttribute('min', sevenDaysAgo);
+            input.setAttribute('min', minDate);
 
             input.addEventListener('change', function () {
                 if (this.value) {
@@ -76,14 +77,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Home Page Logic: Live Date & Init Pagination ---
+    //Live Date & Init Pagination
     const liveDateEl = document.getElementById('live-date');
     if (liveDateEl) {
         const now = new Date();
         const options = { day: 'numeric', month: 'short', year: 'numeric' };
         liveDateEl.innerText = now.toLocaleDateString('en-GB', options);
     }
-
     // Reusable Calendar Logic
     function initCalendar(container) {
         if (!container) return;
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
             prevBtn.className = 'cal-nav-btn';
             prevBtn.innerText = '<';
             prevBtn.onclick = (e) => {
-                e.stopPropagation(); // prevent card click
+                e.stopPropagation();
                 date.setMonth(date.getMonth() - 1);
                 render(date);
             };
@@ -224,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
         render(currentViewDate);
     }
 
-    // Init Homepage Calendar (Page 1)
+    // Init Homepage Calendar
     const homepageCalendar = document.getElementById('homepage-calendar');
     if (homepageCalendar) {
         initCalendar(homepageCalendar);
@@ -233,78 +233,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function initPagination() {
         const epaperSection = document.querySelector('.epaper-section');
-        const originalTopRow = document.querySelector('.top-row'); // Part of Page 1
-        // Original grid contains Page 1 cards
+        const originalTopRow = document.querySelector('.top-row');
         const originalGrid = document.querySelector('.epaper-grid');
+        const todayContainer = document.getElementById('today-paper-container');
 
         if (!epaperSection || !originalTopRow || !originalGrid) return;
 
-        // 1. Gather existing dates to continue sequence
-        // We find dates from links like reader.html?date=DD-MM-YYYY
-        // Page 1 cards:
-        const existingCards = document.querySelectorAll('.paper-link');
-        let lastDateString = "";
-
-        // Find the oldest date on Page 1 to start decrementing from
-        existingCards.forEach(link => {
-            const href = link.getAttribute('href');
-            if (href && href.includes('date=')) {
-                const d = href.split('date=')[1];
-                lastDateString = d;
-                // We assume they are ordered descending, so the last one in DOM involves the oldest date
-            }
-        });
-
-        // Parse last date (DD-MM-YYYY)
-        let parts = lastDateString.split('-'); // [DD, MM, YYYY]
-        let currentDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`); // YYYY-MM-DD
-
-        // 2. Calculate needed cards
-        // User wants Total 30 cards. 
-        // Page 1 has: 1 (top) + 7 (grid) = 8 cards (based on file read). 
-        // Note: User prompt said 9 cards on Page 1. Let's trust DOM check:
-        // Top row has 1 card. Grid has 7 cards. Total 8.
-        // If user insists on 9, maybe I missed one? 
-        // Let's count properly:
-        // .top-card-wrapper .paper-link -> 1
-        // .epaper-grid .paper-link -> 7
-        // Total = 8. 
-        // If requirements say "Page 1 -> 9 paper cards (already present)", and I only see 8, 
-        // I will assume the requirement implies the layout allows for 9 or I should treat the existing set as "Page 1 set".
-        // However, strict rule: "DO NOT change the FIRST landing page layout at all."
-        // So I cannot add a card to Page 1 to make it 9. I must respect the existing DOM.
-        // So I will start generating for Page 2.
-
-        // Total needed: 30.
-        // Existing: 8.
-        // To generate: 22.
+        let currentDate = new Date();
 
         const totalCardsWanted = 30;
-        const existingCount = existingCards.length; // 8
-        const needed = totalCardsWanted - existingCount; // 22
-
         const generatedCards = [];
 
-        for (let i = 0; i < needed; i++) {
-            currentDate.setDate(currentDate.getDate() - 1);
-
-            // Format back to DD-MM-YYYY
-            const d = String(currentDate.getDate()).padStart(2, '0');
-            const m = String(currentDate.getMonth() + 1).padStart(2, '0');
-            const y = currentDate.getFullYear();
+        // Helper to generate card HTML
+        const generateCardHTML = (dateObj, isToday = false) => {
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const y = dateObj.getFullYear();
             const dateStr = `${d}-${m}-${y}`;
-            const displayDate = `${d} ${currentDate.toLocaleString('default', { month: 'short' })} ${y}`; // e.g. 09 Jan 2026
+            const displayDate = `${d} ${dateObj.toLocaleString('default', { month: 'short' })} ${y}`;
 
-            // Generate Card HTML
-            // Note: Using a placeholder image or cycling existing ones would be safer than missing assets.
-            // I'll cycle 10-01-2026-1.png or similar if assets don't exist, but prompt implies functional logic.
-            // I will construct the path dynamically like others: assets/previews/${dateStr}-1.png
+            // ID for the very first card if needed (originally 'today-paper')
+            const idAttr = isToday ? 'id="today-paper"' : '';
 
-            // Generate Card HTML
-            // Note: Added this.onerror=null to prevent infinite loop if fallback fails
-            const cardHtml = `
+            return `
                 <a href="reader.html?date=${dateStr}" class="paper-link">
-                    <div class="paper-card">
+                    <div class="paper-card" ${idAttr}>
                         <img src="assets/previews/${dateStr}-1.png" alt="${d} ${m} ${y} Newspaper" onerror="this.onerror=null;this.src='assets/previews/10-01-2026-1.png'">
                         <div class="paper-info">
                             <h4>Eeloka</h4>
@@ -314,49 +267,40 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </a>
             `;
-            generatedCards.push(cardHtml);
+        };
+
+        // Generate 30 cards
+        for (let i = 0; i < totalCardsWanted; i++) {
+
+            if (i > 0) {
+                currentDate.setDate(currentDate.getDate() - 1);
+            }
+            generatedCards.push(generateCardHTML(new Date(currentDate), i === 0));
         }
 
-        // 3. Create Page Containers
-        // Page 2: cards 9 to ? (Logic: fit cards naturally)
-        // Page 3: remaining
-        // Requirement: "Cards must appear in rows of 4"
-        // Requirement: "The first row must contain the calendar at the end" (for Page 2 and 3)
-        // So for Page 2:
-        // Row 1: Card, Card, Card, Calendar
-        // Row 2+: Cards...
+        if (todayContainer && generatedCards.length > 0) {
+            todayContainer.innerHTML = generatedCards[0];
+        }
 
-        // Let's distribute generated cards.
-        // Page 1 is done.
+        const cardsForPage1Grid = generatedCards.slice(1, 9);
+        if (originalGrid) {
+            originalGrid.innerHTML = '';
+            cardsForPage1Grid.forEach(html => {
+                const temp = document.createElement('div');
+                temp.innerHTML = html.trim();
+                originalGrid.appendChild(temp.firstChild);
+            });
+        }
 
-        // Paging Logic: 
-        // We have `needed` (22) cards to distribute.
-        // Let's split them roughly equally or fill Page 2 full then Page 3?
-        // "Page 2 → remaining papers (fit cards naturally)"
-        // "Page 3 → remaining papers"
-        // Let's put 11 on Page 2 and 11 on Page 3? 
-        // Page 2 Layout:
-        // Row 1: 3 cards + Calendar
-        // Row 2: 4 cards
-        // Row 3: 4 cards
-        // Total capacity for 3 rows = 11 cards. Perfect.
+        const cardsForPage2 = generatedCards.slice(9, 20);
+        const cardsForPage3 = generatedCards.slice(20, 30);
 
-        // Page 3 Layout:
-        // Row 1: 3 cards + Calendar
-        // Row 2: 4 cards
-        // Row 3: 4 cards
-        // Total capacity = 11 cards. Perfect.
-        // Total 22 generated cards fit exactly into 2 pages of 11 cards each with the calendar layout.
-
+        // Helper to create page container
         const createPage = (pageId, cards) => {
             const pageDiv = document.createElement('div');
             pageDiv.id = pageId;
             pageDiv.className = 'epaper-grid generated-page';
-            pageDiv.style.display = 'none'; // hidden by default
-
-            // Insert content
-            // Row 1 logic: 3 cards, then Calendar wrapper
-            // Then remaining cards.
+            pageDiv.style.display = 'none';
 
             // First 3 cards
             cards.slice(0, 3).forEach(html => {
@@ -365,19 +309,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 pageDiv.appendChild(temp.firstChild);
             });
 
-            // Calendar Wrapper (Clone structure)
+            // Calendar Wrapper 
             const calWrapper = document.createElement('div');
-            // We reuse .top-card-wrapper style for consistency or .paper-card style?
-            // Page 1 calendar is inside .top-card-wrapper.
-            // Requirement: "matches reference image", "Layout must match the reference image", "Cards must appear in rows of 4"
-            // If I look at Page 1, the calendar is in .top-row (which is flex/grid).
-            // Here we are inside .epaper-grid (grid 4 cols).
-            // So we can just make a div that spans 1 cell.
-            // Styles:
-            // .top-card-wrapper has background white, shadow, radius.
-            // .calendar-wrapper has padding 15px.
             calWrapper.className = 'top-card-wrapper calendar-wrapper';
-            // We need to initialize calendar in it.
             initCalendar(calWrapper);
             pageDiv.appendChild(calWrapper);
 
@@ -391,9 +325,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return pageDiv;
         };
 
-        const cardsForPage2 = generatedCards.slice(0, 11);
-        const cardsForPage3 = generatedCards.slice(11); // remaining
-
         const page2 = createPage('page-2', cardsForPage2);
         const page3 = createPage('page-3', cardsForPage3);
 
@@ -406,13 +337,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const btnFirst = pagesContainer.querySelector('.first');
         const btnLast = pagesContainer.querySelector('.last');
-        const btn1 = pagesContainer.querySelector('.page:nth-child(2)'); // "1"
-        const btn2 = pagesContainer.querySelector('.page:nth-child(3)'); // "2"
-        const btn3 = pagesContainer.querySelector('.page:nth-child(4)'); // "3"
-        // Note: HTML has <div class="page">4</div> as well. 
-        // Prompt says "Three numeric buttons -> Page 1, Page 2, Page 3". 
-        // Existing HTML has 1, 2, 3, 4. I should hide or remove "4" if it exists, or ignore it.
-        // I will hide the 4th button if it exists.
+        const btn1 = pagesContainer.querySelector('.page:nth-child(2)');
+        const btn2 = pagesContainer.querySelector('.page:nth-child(3)');
+        const btn3 = pagesContainer.querySelector('.page:nth-child(4)');
         const btn4 = pagesContainer.querySelector('.page:nth-child(5)');
         if (btn4) btn4.style.display = 'none';
 
@@ -426,7 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (pageStr === '1') {
                 if (btn1) btn1.classList.add('active');
-                originalTopRow.style.display = 'grid'; // Restore
+                originalTopRow.style.display = 'grid';
                 originalGrid.style.display = 'grid';
                 page2.style.display = 'none';
                 page3.style.display = 'none';
@@ -443,6 +370,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 page2.style.display = 'none';
                 page3.style.display = 'grid';
             }
+
+            // Mobile Optimization: Scroll to top on page switch
+            if (window.innerWidth <= 480) {
+                window.scrollTo(0, 0);
+            }
         }
 
         // Attach Listeners
@@ -452,20 +384,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (btnFirst) btnFirst.onclick = () => switchPage('1');
         if (btnLast) btnLast.onclick = () => switchPage('3');
 
-        // Initial State
-        // Ensure Page 1 active (HTML has "2" active by default for some reason in snippet, let's fix that)
         switchPage('1');
     }
 
     // --- Reader Page Logic ---
-    const mainViewer = document.getElementById('main-viewer');
+    const pdfContainer = document.getElementById('pdf-container');
+    const pdfCanvas = document.getElementById('pdf-render');
 
-    if (mainViewer) {
+    if (pdfCanvas) {
         // --- Initialization & Configuration ---
         const urlParams = new URLSearchParams(window.location.search);
         const dateParam = urlParams.get('date') || '20-01-2026';
-        let totalPages = 8;
-        let currentPage = 1;
+        let pdfDoc = null;
+        let pageNum = 1;
+        let pageRendering = false;
+        let pageNumPending = null;
+        const ctx = pdfCanvas.getContext('2d');
 
         // --- DOM Elements ---
         const thumbContainer = document.getElementById('thumbnail-container');
@@ -478,7 +412,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const archiveBtn = document.querySelector('.btn-archive');
 
         // --- Helper Functions ---
-        const getPDFPath = (page) => `assets/pdfs/${dateParam}.pdf#page=${page}&toolbar=0&navpanes=0&view=FitH`;
+        const getPDFUrl = () => `assets/pdfs/${dateParam}.pdf`;
         const getSafeImagePath = (page) => `assets/previews/${dateParam}-1.png`;
 
         async function loadConfig() {
@@ -488,58 +422,114 @@ document.addEventListener('DOMContentLoaded', () => {
                 const paperData = config[dateParam];
 
                 if (paperData) {
-                    totalPages = paperData.pageCount;
                     document.title = `E-Paper – ${paperData.title}`;
                 } else {
                     document.title = `E-Paper – ${dateParam.replace(/-/g, ' ')}`;
                 }
-                initReader();
             } catch (error) {
                 console.error('Failed to load config:', error);
                 document.title = `E-Paper – ${dateParam.replace(/-/g, ' ')}`;
-                initReader();
             }
+            initReader();
         }
 
-        function initReader() {
-            // 1. Generate Thumbnails
-            if (thumbContainer) {
-                thumbContainer.innerHTML = '';
-                for (let i = 1; i <= totalPages; i++) {
-                    const thumb = document.createElement('div');
-                    thumb.className = `thumb-item ${i === 1 ? 'active' : ''}`;
-                    thumb.innerHTML = `
-                        <img src="${getSafeImagePath(i)}" alt="Page ${i}">
-                        <span>Page ${i}</span>
-                    `;
-                    thumb.onclick = () => switchPage(i);
-                    thumbContainer.appendChild(thumb);
-                }
-            }
+        async function initReader() {
+            try {
+                const url = getPDFUrl();
+                const loadingTask = pdfjsLib.getDocument(url);
+                pdfDoc = await loadingTask.promise;
 
-            // 2. Generate Pagination Buttons
-            if (controlPagination) {
-                const existingNumberBtns = controlPagination.querySelectorAll('.page-btn:not(#prev-btn):not(#next-btn)');
-                existingNumberBtns.forEach(b => b.remove());
-
-                for (let i = 1; i <= totalPages; i++) {
-                    const btn = document.createElement('div');
-                    btn.className = `page-btn ${i === 1 ? 'active' : ''}`;
-                    btn.innerText = i;
-                    btn.onclick = () => switchPage(i);
-                    if (nextBtn) {
-                        controlPagination.insertBefore(btn, nextBtn);
-                    } else {
-                        controlPagination.appendChild(btn);
+                // 1. Generate Thumbnails (pdfDoc.numPages gives exact count)
+                if (thumbContainer) {
+                    thumbContainer.innerHTML = '';
+                    for (let i = 1; i <= pdfDoc.numPages; i++) {
+                        const thumb = document.createElement('div');
+                        thumb.className = `thumb-item ${i === 1 ? 'active' : ''}`;
+                        thumb.innerHTML = `
+                            <img src="${getSafeImagePath(i)}" alt="Page ${i}">
+                            <span>Page ${i}</span>
+                        `;
+                        thumb.onclick = () => queueRenderPage(i);
+                        thumbContainer.appendChild(thumb);
                     }
                 }
+
+                // 2. Generate Pagination Buttons
+                if (controlPagination) {
+                    const existingNumberBtns = controlPagination.querySelectorAll('.page-btn:not(#prev-btn):not(#next-btn)');
+                    existingNumberBtns.forEach(b => b.remove());
+
+                    for (let i = 1; i <= pdfDoc.numPages; i++) {
+                        const btn = document.createElement('div');
+                        btn.className = `page-btn ${i === 1 ? 'active' : ''}`;
+                        btn.innerText = i;
+                        btn.onclick = () => queueRenderPage(i);
+                        if (nextBtn) {
+                            controlPagination.insertBefore(btn, nextBtn);
+                        } else {
+                            controlPagination.appendChild(btn);
+                        }
+                    }
+                }
+
+                // Initial Render
+                renderPage(pageNum);
+
+            } catch (error) {
+                console.error('Error loading PDF:', error);
+                if (pdfContainer) pdfContainer.innerHTML = `<p style="text-align:center; padding:20px;">Error loading PDF: ${error.message}</p>`;
             }
-            switchPage(1);
         }
 
-        function switchPage(pageNumber) {
-            currentPage = pageNumber;
+        function renderPage(num) {
+            pageRendering = true;
 
+            // Fetch page
+            pdfDoc.getPage(num).then(function (page) {
+                const containerWidth = pdfContainer.clientWidth || 800;
+                const unscaledViewport = page.getViewport({ scale: 1 });
+
+                // Subtract some padding/margin roughly
+                const scale = (containerWidth - 20) / unscaledViewport.width;
+                const viewport = page.getViewport({ scale: scale });
+
+                pdfCanvas.height = viewport.height;
+                pdfCanvas.width = viewport.width;
+
+                // Render
+                const renderContext = {
+                    canvasContext: ctx,
+                    viewport: viewport
+                };
+                const renderTask = page.render(renderContext);
+
+                // Wait for render to finish
+                renderTask.promise.then(function () {
+                    pageRendering = false;
+                    if (pageNumPending !== null) {
+                        renderPage(pageNumPending);
+                        pageNumPending = null;
+                    }
+                });
+            });
+
+            // Update UI State
+            pageNum = num;
+            updateUIState(num);
+
+            // Scroll to top of PDF container
+            if (pdfContainer) pdfContainer.scrollTop = 0;
+        }
+
+        function queueRenderPage(num) {
+            if (pageRendering) {
+                pageNumPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+
+        function updateUIState(pageNumber) {
             // Update Thumbnails Active State
             const thumbs = document.querySelectorAll('.thumb-item');
             thumbs.forEach((t, idx) => {
@@ -553,12 +543,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.classList.toggle('active', btnVal === pageNumber);
             });
 
-            // Update Iframe Source
-            mainViewer.src = 'about:blank';
-            setTimeout(() => {
-                mainViewer.src = getPDFPath(pageNumber);
-            }, 50);
-
             // Scroll active thumbnail into view
             if (thumbs[pageNumber - 1]) {
                 thumbs[pageNumber - 1].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -566,14 +550,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // --- Event Listeners ---
-        if (prevBtn) prevBtn.onclick = () => { if (currentPage > 1) switchPage(currentPage - 1); };
-        if (nextBtn) nextBtn.onclick = () => { if (currentPage < totalPages) switchPage(currentPage + 1); };
-        if (leftArrow) leftArrow.onclick = () => { if (currentPage > 1) switchPage(currentPage - 1); };
-        if (rightArrow) rightArrow.onclick = () => { if (currentPage < totalPages) switchPage(currentPage + 1); };
+        const onPrev = () => { if (pageNum <= 1) return; queueRenderPage(pageNum - 1); };
+        const onNext = () => { if (pageNum >= pdfDoc.numPages) return; queueRenderPage(pageNum + 1); };
+
+        if (prevBtn) prevBtn.onclick = onPrev;
+        if (nextBtn) nextBtn.onclick = onNext;
+        if (leftArrow) leftArrow.onclick = onPrev;
+        if (rightArrow) rightArrow.onclick = onNext;
 
         if (pdfBtn) {
             pdfBtn.onclick = () => {
-                window.open(`assets/pdfs/${dateParam}.pdf`, '_blank');
+                window.open(getPDFUrl(), '_blank');
             };
         }
 
