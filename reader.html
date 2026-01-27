@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-Paper Reader</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
 <body class="reader-body">
@@ -46,7 +46,9 @@
         </aside>
 
         <section class="viewer-area">
-            <iframe src="" class="main-page-iframe" id="main-viewer" frameborder="0"></iframe>
+            <div class="main-page-iframe" id="pdf-container" style="overflow-y: auto; overflow-x: hidden;">
+                <canvas id="pdf-render"></canvas>
+            </div>
             <button class="pdf-nav-arrow left-arrow" id="left-arrow">
                 <i class="fas fa-chevron-left"></i>
             </button>
@@ -58,14 +60,18 @@
 
     <footer class="footer">
         <div class="socials">
-            <div class="icon"></div>
-            <div class="icon"></div>
-            <div class="icon"></div>
-            <div class="icon"></div>
-            <div class="icon"></div>
+            <a href="#" class="icon"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="icon"><i class="fab fa-x-twitter"></i></a>
+            <a href="#" class="icon"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="icon"><i class="fab fa-youtube"></i></a>
+            <a href="mailto:example@gmail.com" class="icon"><i class="fas fa-envelope"></i></a>
         </div>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
     <script src="main.js"></script>
 </body>
 
