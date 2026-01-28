@@ -390,6 +390,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Reader Page Logic ---
     const pdfContainer = document.getElementById('pdf-container');
     const pdfCanvas = document.getElementById('pdf-render');
+    const BACKEND_URL = "http://localhost:3000";
+
 
     if (pdfCanvas) {
         // --- Initialization & Configuration ---
@@ -412,30 +414,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const archiveBtn = document.querySelector('.btn-archive');
 
         // --- Helper Functions ---
-        const getPDFUrl = () => `assets/pdfs/${dateParam}.pdf`;
+
         const getSafeImagePath = (page) => `assets/previews/${dateParam}-1.png`;
+        initReader();
+        // async function loadConfig() {
+        //     try {
+        //         const response = await fetch('newspaper-config.json');
+        //         const config = await response.json();
+        //         const paperData = config.papers?.[dateParam];
 
-        async function loadConfig() {
-            try {
-                const response = await fetch('newspaper-config.json');
-                const config = await response.json();
-                const paperData = config[dateParam];
-
-                if (paperData) {
-                    document.title = `E-Paper – ${paperData.title}`;
-                } else {
-                    document.title = `E-Paper – ${dateParam.replace(/-/g, ' ')}`;
-                }
-            } catch (error) {
-                console.error('Failed to load config:', error);
-                document.title = `E-Paper – ${dateParam.replace(/-/g, ' ')}`;
-            }
-            initReader();
-        }
+        //         if (paperData) {
+        //             document.title = `E-Paper – ${paperData.title}`;
+        //         } else {
+        //             document.title = `E-Paper – ${dateParam.replace(/-/g, ' ')}`;
+        //         }
+        //     } catch (error) {
+        //         console.error('Failed to load config:', error);
+        //         document.title = `E-Paper – ${dateParam.replace(/-/g, ' ')}`;
+        //     }
+        //     initReader();
+        // }
 
         async function initReader() {
             try {
-                const url = getPDFUrl();
+                const url = `${BACKEND_URL}/api/pdf/${dateParam}`;
                 const loadingTask = pdfjsLib.getDocument(url);
                 pdfDoc = await loadingTask.promise;
 
@@ -560,7 +562,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (pdfBtn) {
             pdfBtn.onclick = () => {
-                window.open(getPDFUrl(), '_blank');
+                window.open(`${BACKEND_URL}/api/pdf/${dateParam}`, '_blank');
             };
         }
 

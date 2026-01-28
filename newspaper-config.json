@@ -1,38 +1,58 @@
 {
-    "20-01-2026": {
-        "pageCount": 8,
-        "title": "20 Jan 2026"
+    "pdfSource": "google-drive",
+    "sources": {
+        "local": {
+            "basePath": "assets/pdfs/"
+        },
+        "googleDrive": {
+            "baseUrl": "https://drive.google.com/uc?export=download&id="
+        }
     },
-    "19-01-2026": {
-        "pageCount": 8,
-        "title": "19 Jan 2026"
-    },
-    "17-01-2026": {
-        "pageCount": 10,
-        "title": "17 Jan 2026"
-    },
-    "16-01-2026": {
-        "pageCount": 8,
-        "title": "16 Jan 2026"
-    },
-    "15-01-2026": {
-        "pageCount": 8,
-        "title": "15 Jan 2026"
-    },
-    "14-01-2026": {
-        "pageCount": 8,
-        "title": "14 Jan 2026"
-    },
-    "13-01-2026": {
-        "pageCount": 8,
-        "title": "13 Jan 2026"
-    },
-    "12-01-2026": {
-        "pageCount": 8,
-        "title": "12 Jan 2026"
-    },
-    "10-01-2026": {
-        "pageCount": 8,
-        "title": "10 Jan 2026"
+    "papers": {
+        "20-01-2026": {
+            "fileId":"1LAgK8mTqmD9gi5J0mm6V8IQPQo-d2_St",
+            "pageCount": 8,
+            "title": "20 Jan 2026"
+        },
+        "19-01-2026": {
+            "fileId":"1g_PkU2X6320IjQ2QnmMB04welszTgScn",
+            "pageCount": 8,
+            "title": "19 Jan 2026"
+        },
+        "17-01-2026": {
+            "fileId":"1bcqXnsGkAMXi0jWO0ELGchN5nNN0cP4U",
+            "pageCount": 10,
+            "title": "17 Jan 2026"
+        },
+        "16-01-2026": {
+            "fileId":"1yn2pJd9T_ZMTEtSC2GC5vIGUmPMKAOAI",
+            "pageCount": 8,
+            "title": "16 Jan 2026"
+        },
+        "15-01-2026": {
+            "fileId":"1n64vLa6qaBQpVKceU7elpGueI8zDrGQE",
+            "pageCount": 8,
+            "title": "15 Jan 2026"
+        },
+        "14-01-2026": {
+            "fileId":"",
+            "pageCount": 8,
+            "title": "14 Jan 2026"
+        },
+        "13-01-2026": {
+            "fileId":"",
+            "pageCount": 8,
+            "title": "13 Jan 2026"
+        },
+        "12-01-2026": {
+            "fileId":"",
+            "pageCount": 8,
+            "title": "12 Jan 2026"
+        },
+        "10-01-2026": {
+            "fileId":"",
+            "pageCount": 8,
+            "title": "10 Jan 2026"
+        }
     }
 }
